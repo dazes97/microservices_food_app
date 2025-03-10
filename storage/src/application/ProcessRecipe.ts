@@ -1,7 +1,6 @@
 import { StoragePublisher } from "@/infrastructure/transporter/StoragePublisher.js";
 import { IIngredientRepository } from "@domain/repositories/IIngredientRepository.js";
 import { IDatabaseAdapter } from "@/infrastructure/database/DatabaseAdapater.js";
-import { EVENT_LIST } from "@/infrastructure/config/EventList.js";
 import { PlazaClient } from "@infrastructure/http/PlazaClient.js";
 
 interface IStockVerification {
@@ -10,7 +9,6 @@ interface IStockVerification {
   required: number;
 }
 export class ProcessRecipe {
-  // onlyOnce: boolean = false;
   constructor(
     private ingredientRepository: IIngredientRepository,
     private plazaClient: PlazaClient,
@@ -18,24 +16,11 @@ export class ProcessRecipe {
     private databaseAdapter: IDatabaseAdapter
   ) {}
 
-  // async launch3times() {
-  //   this.onlyOnce = true;
-  //   for (let i = 0; i < 3; i++) {
-  //     console.log(`🚀 Disparando evento ${i + 1}...`);
-  //     await this.responsePublisher.publishIngredientAssigned(i);
-  //     await new Promise((resolve) => setTimeout(resolve, 1000)); // Espera 1s entre eventos
-  //   }
-
-  //   console.log("Todos los eventos han sido publicados.");
-  // }
   async execute(
     orderId: number,
     recipeId: number,
     requiredIngredients: { name: string; quantity: number }[]
   ) {
-    // if (!this.onlyOnce) {
-    // this.launch3times();
-    // }
     console.log(
       `=========================== STARTING TRANSACTION ORDER: ${orderId}===========================`
     );
