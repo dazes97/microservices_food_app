@@ -1,5 +1,5 @@
 {
-  "name": "orders",
+  "name": "kitchen",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -10,21 +10,24 @@
     "test": "tests"
   },
   "scripts": {
-    "dev": "tsx watch --include ./src/** ./src/index.ts",
-    "build": "rm -rf dist && tsc",
-    "start": "node dist/index.js",
+    "dev": "tsx watch --include ./src/** ./src/main.ts",
+    "build": "rm -rf dist && tsc && tsc-alias",
+    "start": "node dist/main.js",
     "test": "jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
+    "mysql2": "^3.13.0",
     "redis": "^4.7.0"
   },
   "devDependencies": {
+    "ts-node": "^10.9.2",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.9",
+    "@types/node": "^22.13.10",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.6",
+    "tsc-alias": "^1.8.11",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }

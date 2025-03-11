@@ -1,24 +1,24 @@
 import { TransportAdapter } from "@infrastructure/transporter/TransporterAdapter";
-import { ProcessRecipe } from "@application/ProcessRecipe.js";
+// import { ProcessRecipe } from "@application/ProcessRecipe.js";
 import { EVENT_LIST } from "@infrastructure/config/EventList.js";
 export class KitchenSubscriber {
   constructor(
     private transporter: TransportAdapter,
-    private processRecipe: ProcessRecipe
+    // private processRecipe: ProcessRecipe
   ) {}
   async subscribeToKitchenEvents() {
     this.ingredientsAvailabilityEvent();
   }
   async ingredientsAvailabilityEvent() {
     this.transporter.subscribe(
-      EVENT_LIST.RECIPE_ASSIGNED,
+      EVENT_LIST.ORDER_STATUS,
       async (message: {
         orderId: number;
         recipeId: number;
-        ingredients: { id: number; quantity: number }[];
+        ingredients: { name: string; quantity: number }[];
       }) => {
         const { orderId, recipeId, ingredients } = message;
-        await this.processRecipe.execute(orderId, recipeId, ingredients);
+        // await this.processRecipe.execute(orderId, recipeId, ingredients);
       }
     );
   }

@@ -15,7 +15,7 @@ export class KitchenSubscriber {
       async (message: {
         orderId: number;
         recipeId: number;
-        ingredients: { id: number; quantity: number }[];
+        ingredients: { name: string; quantity: number }[];
       }) => {
         const { orderId, recipeId, ingredients } = message;
         await this.processRecipe.execute(orderId, recipeId, ingredients);

@@ -19,7 +19,7 @@ export class ProcessRecipe {
   async execute(
     orderId: number,
     recipeId: number,
-    requiredIngredients: { id: number; quantity: number }[]
+    requiredIngredients: { name: string; quantity: number }[]
   ) {
     console.log(
       `=========================== STARTING TRANSACTION ORDER: ${orderId}===========================`
@@ -29,8 +29,8 @@ export class ProcessRecipe {
     try {
       let allAvailableFlag = true;
       let stockVerification: IStockVerification[] = [];
-      let foundIngredients = await this.ingredientRepository.findByIds(
-        requiredIngredients.map((i) => i.id)
+      let foundIngredients = await this.ingredientRepository.findByNames(
+        requiredIngredients.map((i) => i.name)
       );
       if (!foundIngredients) {
         throw new Error("No hay ingredientes en la base de datos.");
@@ -40,7 +40,7 @@ export class ProcessRecipe {
 
       for (const foundIngredient of foundIngredients) {
         const requiredIngredient = requiredIngredients.find(
-          (i) => i.id === foundIngredient.id
+          (i) => i.name === foundIngredient.name
         );
         if (requiredIngredient) {
           stockVerification.push({
@@ -76,8 +76,8 @@ export class ProcessRecipe {
       if (!allAvailableFlag) {
         throw new Error("No hay suficiente stock. No se aplicarán cambios.");
       }
-      foundIngredients = await this.ingredientRepository.findByIds(
-        requiredIngredients.map((i) => i.id)
+      foundIngredients = await this.ingredientRepository.findByNames(
+        requiredIngredients.map((i) => i.name)
       );
       if (!foundIngredients) {
         throw new Error("No hay ingredientes en la base de datos.");
@@ -87,7 +87,7 @@ export class ProcessRecipe {
       if (foundIngredients.length === requiredIngredients.length) {
         for (const foundIngredient of foundIngredients) {
           const requiredIngredient = requiredIngredients.find(
-            (i) => i.id === foundIngredient.id
+            (i) => i.name === foundIngredient.name
           );
           if (requiredIngredient) {
             allAvailableFlag = foundIngredient.isAvailable(

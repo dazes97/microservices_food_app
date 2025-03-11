@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "target": "ES2015",
     "moduleDetection": "force",
-    "module": "ES6",
+    "module": "ESNext",
     "resolveJsonModule": true,
     "allowJs": true,
     "esModuleInterop": true,
@@ -12,7 +13,10 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@domain/*": ["src/domain/*"],
+      "@application/*": ["src/application/*"]
     }
   }
 }
