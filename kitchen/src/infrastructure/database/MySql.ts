@@ -1,4 +1,4 @@
-import mysql, { PoolOptions } from "mysql2/promise";
+import mysql, { PoolOptions } from "mysql2/promise.js";
 import { IDatabaseAdapter } from "./DatabaseAdapater.js";
 
 export class MySqlAdapter implements IDatabaseAdapter {

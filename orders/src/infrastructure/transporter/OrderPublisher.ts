@@ -2,7 +2,7 @@ import { TransportAdapter } from "@infrastructure/transporter/TransporterAdapter
 export class OrderPublisher {
   constructor(private transporter: TransportAdapter) {}
   async sendOrderRequest(orderId: number) {
-    const QUEUE_NAME = process.env.TRANSPORTER_QUEUE_NAME;
+    const QUEUE_NAME = process.env.ORDERS_QUEUE_NAME;
     try {
       if (!QUEUE_NAME) throw new Error("Kitchen queue name not defined");
       await this.transporter.sendToQueue(
@@ -10,7 +10,7 @@ export class OrderPublisher {
         JSON.stringify({ orderId })
       );
       console.log(
-        `📢 Enviando a la cola ${QUEUE_NAME} Orden ${orderId}, Receta Aun no definida, enviando a la cocina`
+        `Enviando a la cola ${QUEUE_NAME} Orden ${orderId}, Receta Aun no definida, enviando a la cocina`
       );
     } catch (error) {
       console.error(

@@ -20,11 +20,16 @@ const MICROSERVICE_NAME = process.env.MICROSERVICE_NAME || "MICROSERVICE_NAME";
   const dbAdapter = new MySqlAdapter();
   const orderPublisher = new OrderPublisher(transporter);
   const orderRepository = new OrderRepository(dbAdapter);
-  const processOrder = new ProcessOrder(orderRepository, orderPublisher);
+  const processOrder = new ProcessOrder(
+    orderRepository,
+    orderPublisher,
+    dbAdapter
+  );
   const processOrderDetail = new ProcessOrderDetail(orderRepository);
-  const processOrderRecipe = new ProcessOrderRecipe(orderRepository);
+  const processOrderRecipe = new ProcessOrderRecipe(orderRepository, dbAdapter);
   const processOrderStatusUpdate = new ProcessOrderStatusUpdate(
-    orderRepository
+    orderRepository,
+    dbAdapter
   );
   const kitchenSubscriber = new KitchenSubscriber(
     transporter,
@@ -32,8 +37,8 @@ const MICROSERVICE_NAME = process.env.MICROSERVICE_NAME || "MICROSERVICE_NAME";
     processOrderRecipe
   );
 
-  kitchenSubscriber.subscribeToKitchenEvents();
-  
+  kitchenSubscriber.subscribeToEvents();
+
   const httpServer = new HttpServer(processOrder, processOrderDetail);
   httpServer.start(SERVER_PORT);
 

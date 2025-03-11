@@ -28,8 +28,8 @@ export class Redis implements TransportAdapter {
 
   subscribe(topic: string, callback: (message: any) => void): void {
     this.subscriber.subscribe(topic, (message) => {
-      console.log(`Received message: ${message}`);
-      callback(JSON.parse(message));
+      const data = JSON.parse(message);
+      callback(JSON.parse(data));
     });
   }
 
