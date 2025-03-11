@@ -1,24 +1,37 @@
+import { ProcessOrderStatusUpdate } from "@application/ProcessOrderStatusUpdate.js";
+import { ProcessOrderRecipe } from "@application/ProcessOrderRecipe.js";
 import { TransportAdapter } from "@infrastructure/transporter/TransporterAdapter";
-// import { ProcessRecipe } from "@application/ProcessRecipe.js";
 import { EVENT_LIST } from "@infrastructure/config/EventList.js";
 export class KitchenSubscriber {
   constructor(
     private transporter: TransportAdapter,
-    // private processRecipe: ProcessRecipe
+    private processOrderStatusUpdate: ProcessOrderStatusUpdate,
+    private processOrderRecipe: ProcessOrderRecipe
   ) {}
   async subscribeToKitchenEvents() {
-    this.ingredientsAvailabilityEvent();
+    this.updateOrderStatusEvent();
+    this.updateOrderRecipeEvent();
   }
-  async ingredientsAvailabilityEvent() {
+  async updateOrderRecipeEvent() {
     this.transporter.subscribe(
-      EVENT_LIST.ORDER_STATUS,
+      EVENT_LIST.ORDER_ASSIGNED,
       async (message: {
         orderId: number;
         recipeId: number;
-        ingredients: { name: string; quantity: number }[];
+        recipeName: string;
       }) => {
-        const { orderId, recipeId, ingredients } = message;
-        // await this.processRecipe.execute(orderId, recipeId, ingredients);
+        const { orderId, recipeId, recipeName } = message;
+        await this.processOrderRecipe.execute(orderId, recipeId, recipeName);
+      }
+    );
+  }
+  async updateOrderStatusEvent() {
+    this.transporter.subscribe(
+      EVENT_LIST.ORDER_STATUS,
+      async (message: { status: string; orderId: number }) => {
+        const { orderId, status } = message;
+        console.log("orderId: ", orderId, "Status: ", status);
+        await this.processOrderStatusUpdate.execute(orderId, status);
       }
     );
   }

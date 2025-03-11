@@ -1,8 +1,8 @@
-import { Order } from "../entities/Order";
-
+import { OrderDetail } from "@domain/entities/OrderDetail.js";
 export interface IOrderRepository {
   create(): Promise<number>;
-  updateStatus(order: Order): Promise<Order>;
-  getAll(): Promise<Order[]>;
-  getById(id: number): Promise<Order | null>;
+  updateRecipe(id: number, recipeId: number, recipeName: string): Promise<void>;
+  updateStatus(id: number, status: string): Promise<void>;
+  getAll(): Promise<OrderDetail[]>;
+  getById(id: number): Promise<OrderDetail | null>;
 }

@@ -6,7 +6,7 @@ export class ProcessOrder {
     private orderRepository: IOrderRepository,
     private orderPublisher: OrderPublisher
   ) {}
-  async execute() {
+  async execute(): Promise<void> {
     try {
       console.log("Processing new order...");
       const insertId = await this.orderRepository.create();

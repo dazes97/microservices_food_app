@@ -1,17 +1,18 @@
-import { OrderDetailMapper } from "../mappers/OderDetailMapper.js";
+import { OrderDetailMapper } from "@/infrastructure/mappers/OrderDetailMapper.js";
 import { IOrderRepository } from "@domain/repositories/IOrderRepository.js";
-import { IDatabaseAdapter } from "../database/DatabaseAdapater.js";
+import { IDatabaseAdapter } from "@infrastructure/database/DatabaseAdapater.js";
+import { OrderDetail } from "@domain/entities/OrderDetail.js";
 import { Order } from "@domain/entities/Order.js";
 
 export class OrderRepository implements IOrderRepository {
   constructor(private databaseAdapter: IDatabaseAdapter) {}
-
-  async getById(id: number): Promise<Order | null> {
+  async getById(id: number): Promise<OrderDetail | null> {
     const db = await this.databaseAdapter.getConnection();
     const [rows] = await db.query(
       `
       SELECT 
         o.id,
+        o.recipe_name AS recipeName,
         o.recipe_id AS recipeId,
         o.created_at AS createdAt,
         (	SELECT 
@@ -38,23 +39,39 @@ export class OrderRepository implements IOrderRepository {
     );
     return rows.length > 0 ? OrderDetailMapper.toDomain(rows[0]) : null;
   }
-  updateStatus(order: Order): Promise<Order> {
-    throw new Error("Method not implemented.");
+  async updateStatus(id: number, status: string): Promise<void> {
+    const db = await this.databaseAdapter.getConnection();
+    await db.query(
+      `INSERT INTO order_history_status (status, order_id) VALUES (?,?);`,
+      [status, id]
+    );
+  }
+  async updateRecipe(
+    id: number,
+    recipeId: number,
+    recipeName: string
+  ): Promise<void> {
+    const db = await this.databaseAdapter.getConnection();
+    await db.query(
+      `UPDATE orders SET recipe_id =?, recipe_name =? WHERE id =?;`,
+      [recipeId, recipeName, id]
+    );
   }
   async create(): Promise<number> {
     const db = await this.databaseAdapter.getConnection();
-    const [result] = await db.query("INSERT INTO orders VALUES();", []);
-    return Number(result.insertId);
+    const [row] = await db.query("INSERT INTO orders VALUES();", []);
+    return row.insertId;
   }
   update(order: Order): Promise<Order> {
     throw new Error("Method not implemented.");
   }
-  async getAll(): Promise<Order[]> {
+  async getAll(): Promise<OrderDetail[]> {
     const db = await this.databaseAdapter.getConnection();
     const [rows] = await db.query(
       `
       SELECT 
         o.id,
+        o.recipe_name AS recipeName,
         o.recipe_id AS recipeId,
         o.created_at AS createdAt,
         (	SELECT 

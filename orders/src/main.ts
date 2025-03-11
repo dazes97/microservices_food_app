@@ -1,5 +1,8 @@
 import "dotenv/config";
-import { ProcessOrderDetail } from "./application/processOrderDetail.js";
+import { ProcessOrderStatusUpdate } from "@application/ProcessOrderStatusUpdate.js";
+import { ProcessOrderRecipe } from "@application/ProcessOrderRecipe.js";
+import { ProcessOrderDetail } from "@application/processOrderDetail.js";
+import { KitchenSubscriber } from "@infrastructure/transporter/KitchenSubscriber.js";
 import { OrderRepository } from "@infrastructure/persistence/OrderRepository.js";
 import { OrderPublisher } from "@infrastructure/transporter/OrderPublisher.js";
 import { MySqlAdapter } from "@infrastructure/database/MySql.js";
@@ -19,6 +22,18 @@ const MICROSERVICE_NAME = process.env.MICROSERVICE_NAME || "MICROSERVICE_NAME";
   const orderRepository = new OrderRepository(dbAdapter);
   const processOrder = new ProcessOrder(orderRepository, orderPublisher);
   const processOrderDetail = new ProcessOrderDetail(orderRepository);
+  const processOrderRecipe = new ProcessOrderRecipe(orderRepository);
+  const processOrderStatusUpdate = new ProcessOrderStatusUpdate(
+    orderRepository
+  );
+  const kitchenSubscriber = new KitchenSubscriber(
+    transporter,
+    processOrderStatusUpdate,
+    processOrderRecipe
+  );
+
+  kitchenSubscriber.subscribeToKitchenEvents();
+  
   const httpServer = new HttpServer(processOrder, processOrderDetail);
   httpServer.start(SERVER_PORT);
 
