@@ -26,7 +26,6 @@ export class MySqlAdapter implements IDatabaseAdapter {
       console.error("MySQL connection not established.");
       await this.connect();
     }
-    console.log("MySQL connection established.");
     return this.connection;
   }
 }

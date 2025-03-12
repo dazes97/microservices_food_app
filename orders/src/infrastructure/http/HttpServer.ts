@@ -20,7 +20,7 @@ export class HttpServer {
           await this.handleOrder(req, res);
         } else if (
           req.method === HTTP_METHOD_LIST.GET &&
-          req.url?.match(/^\/\d+$/)
+          req.url?.match(/^\/orders\/\d+$/)
         ) {
           await this.handleOrderDetail(req, res);
         } else {
@@ -51,7 +51,7 @@ export class HttpServer {
 
   private async handleOrderDetail(req: IncomingMessage, res: ServerResponse) {
     try {
-      const urlParts = req.url?.split("/") || [];
+      const urlParts = req.url?.split("/orders/") || [];
       if (urlParts.length > 1 && urlParts[1]) {
         const orderId = Number(urlParts[1]);
         if (!isNaN(orderId)) {

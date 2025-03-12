@@ -3,6 +3,7 @@ import { ProcessOrderStatusUpdate } from "@application/ProcessOrderStatusUpdate.
 import { ProcessOrderRecipe } from "@application/ProcessOrderRecipe.js";
 import { ProcessOrderDetail } from "@application/processOrderDetail.js";
 import { KitchenSubscriber } from "@infrastructure/transporter/KitchenSubscriber.js";
+import { StorageSubscriber } from "@infrastructure/transporter/StorageSubscriber.js";
 import { OrderRepository } from "@infrastructure/persistence/OrderRepository.js";
 import { OrderPublisher } from "@infrastructure/transporter/OrderPublisher.js";
 import { MySqlAdapter } from "@infrastructure/database/MySql.js";
@@ -36,13 +37,18 @@ const MICROSERVICE_NAME = process.env.MICROSERVICE_NAME || "MICROSERVICE_NAME";
     processOrderStatusUpdate,
     processOrderRecipe
   );
-
+  const storageSubscriber = new StorageSubscriber(
+    transporter,
+    processOrderStatusUpdate,
+    processOrderRecipe
+  );
   kitchenSubscriber.subscribeToEvents();
+  storageSubscriber.subscribeToEvents();
 
   const httpServer = new HttpServer(processOrder, processOrderDetail);
   httpServer.start(SERVER_PORT);
 
   console.log(
-    `${MICROSERVICE_NAME} Microservice iniciado y escuchando recetas...`
+    `${MICROSERVICE_NAME} Microservice iniciado y escuchando...`
   );
 })();

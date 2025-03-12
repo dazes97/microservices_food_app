@@ -5,12 +5,11 @@ import { Ingredient } from "@domain/entities/Ingredient.js";
 
 export class IngredientRepository implements IIngredientRepository {
   constructor(private databaseAdapter: IDatabaseAdapter) {}
-  
+
   async findByIds(names: number[]): Promise<Ingredient[] | null> {
     const dbConnection = await this.databaseAdapter.getConnection();
     const filteredNames = names.map((e) => '"' + e + '"').join(",  ");
-    const [rows] = await dbConnection.query(
-      `SELECT i.id, i.name, s.quantity
+    const query = `SELECT i.id, i.name, s.quantity
         FROM stock s
         INNER JOIN ingredients i
 	      ON i.id = s.ingredient_id
@@ -18,9 +17,8 @@ export class IngredientRepository implements IIngredientRepository {
 	      AND i.id IN (${filteredNames})
         WHERE
 	      s.deleted_at IS NULL
-        FOR UPDATE`,
-      []
-    );
+        FOR UPDATE`;
+    const [rows] = await dbConnection.query(query, []);
     return rows.length > 0
       ? rows.map((e: any) => IngredientMapper.toDomain(e))
       : [];

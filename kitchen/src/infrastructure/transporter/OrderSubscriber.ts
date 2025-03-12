@@ -7,9 +7,9 @@ export class OrderSubscriber {
     private processRecipe: ProcessRecipe
   ) {}
   async subscribeToEvents() {
-    this.subscribeToRecipeEvent();
+    this.recipeRequestQueue();
   }
-  async subscribeToRecipeEvent() {
+  async recipeRequestQueue() {
     const queueName = process.env.ORDERS_QUEUE_NAME;
     if (!queueName) throw new Error("Orders queue name not defined");
     await this.transporter.consumeQueue(queueName, async (message) => {

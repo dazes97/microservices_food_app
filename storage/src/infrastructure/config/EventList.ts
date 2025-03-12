@@ -1,6 +1,4 @@
 const EVENT_LIST = {
-  RECIPE_ASSIGNED: "storage.recipe.assigned",
-  RECIPE_FAILED: "kitchen.recipe.failed",
-  RECIPE_COMPLETED: "kitchen.recipe.completed",
+  ORDER_STATUS_COMPLETED: "orders.order.status.finished",
 };
 export { EVENT_LIST };

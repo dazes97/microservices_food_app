@@ -10,7 +10,7 @@ import { HttpServer } from "@infrastructure/http/HttpServer.js";
 import { Redis } from "@infrastructure/transporter/Redis.js";
 
 const MICROSERVICE_NAME = process.env.MICROSERVICE_NAME || "MICROSERVICE_NAME";
-const SERVER_PORT = process.env.PORT ? Number(process.env.SERVER_PORT) : 3000;
+const SERVER_PORT = Number(process.env.SERVER_PORT) || 3000;
 const TRANSPORTER_PORT = process.env.TRANSPORTER_PORT || "6379";
 const TRANSPORTER_HOST = process.env.TRANSPORTER_HOST || "localhost";
 (async () => {
@@ -30,7 +30,7 @@ const TRANSPORTER_HOST = process.env.TRANSPORTER_HOST || "localhost";
   const processStockInfo = new ProcessStockInfo(ingredientRepository);
   const httpServer = new HttpServer(processStockInfo);
 
-  kitchenSubscriber.subscribeToKitchenEvents();
+  kitchenSubscriber.subscribeToEvents();
   httpServer.start(SERVER_PORT);
 
   console.log(

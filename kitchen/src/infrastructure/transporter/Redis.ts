@@ -27,7 +27,6 @@ export class Redis implements TransportAdapter {
 
   subscribe(topic: string, callback: (message: any) => void): void {
     this._subscriber.subscribe(topic, (message) => {
-      console.log(`Received message: ${message}`);
       callback(JSON.parse(message));
     });
   }
@@ -39,20 +38,14 @@ export class Redis implements TransportAdapter {
     queueName: string,
     callback: (message: any) => Promise<void>
   ): Promise<void> {
-    console.log(`📥 Listening to queue: ${queueName}...`);
+    console.log(`Listening to queue: ${queueName}...`);
     while (true) {
       const data = await this._subscriber.brPop(queueName, 0);
       if (data) {
         const message = JSON.parse(data.element);
-        console.log("queue message: ",message)
         try {
-          console.log("before calling callback");
           await callback(JSON.parse(message));
-          console.log("after calling callback");
-        } catch (error) {
-          // Opcional: reinsertar el mensaje en la cola si falla
-          // await this.sendToQueue(queueName, message);
-        }
+        } catch (error) {}
       }
     }
   }

@@ -1,6 +1,6 @@
-import { StoragePublisher } from "@/infrastructure/transporter/StoragePublisher.js";
+import { StoragePublisher } from "@infrastructure/transporter/StoragePublisher.js";
 import { IIngredientRepository } from "@domain/repositories/IIngredientRepository.js";
-import { IDatabaseAdapter } from "@/infrastructure/database/DatabaseAdapater.js";
+import { IDatabaseAdapter } from "@infrastructure/database/DatabaseAdapater.js";
 import { PlazaClient } from "@infrastructure/http/PlazaClient.js";
 
 interface IStockVerification {
@@ -54,23 +54,31 @@ export class ProcessRecipe {
       }
       console.log("Stock actualizados:", stockVerification);
       for (const detail of stockVerification) {
-        if (detail.inStock < detail.required) {
-          const { name, quantitySold } = await this.plazaClient.buyIngredient(
-            detail.name
-          );
-          console.log(` Comprando ${quantitySold} de ${name} en la Plaza...`);
-          if (quantitySold === 0) {
-            throw new Error(`Can not get from the plaza ${name}`);
+        let stockFlag: boolean = true;
+        let cart: number = 0;
+        while (stockFlag) {
+          if (cart + detail.inStock < detail.required) {
+            console.log(
+              "no hay suficiente stock en la base de datos, intentando comprar....."
+            );
+            const { name, quantitySold } = await this.plazaClient.buyIngredient(
+              detail.name
+            );
+            console.log(` Comprando ${quantitySold} de ${name} en la Plaza...`);
+            if (quantitySold > 0) {
+              await this.ingredientRepository.increaseQuantity(
+                detail.name,
+                quantitySold
+              );
+              cart += quantitySold;
+              console.log(
+                `Stock actualizado: ${detail.name} -> ${detail.inStock + cart}`
+              );
+            }
+          } else {
+            console.log(`Stock disponible dejando de comprar`);
+            stockFlag = false;
           }
-          await this.ingredientRepository.increaseQuantity(
-            detail.name,
-            quantitySold
-          );
-          console.log(
-            `Stock actualizado: ${detail.name} -> ${
-              detail.inStock + quantitySold
-            }`
-          );
         }
       }
       if (!allAvailableFlag) {
@@ -118,11 +126,7 @@ export class ProcessRecipe {
       }
       console.log("Stock reducido correctamente.");
       setTimeout(async () => {
-        await this.storagePublisher.publishIngredientsAvailability(
-          orderId,
-          recipeId,
-          allAvailableFlag
-        );
+        await this.storagePublisher.sendOrderStatusCompleted(orderId);
       }, 5000);
       await db.query("COMMIT");
       console.log(
@@ -131,11 +135,9 @@ export class ProcessRecipe {
     } catch (error) {
       console.error(error);
       await db.query("ROLLBACK");
-      await this.storagePublisher.publishIngredientsAvailability(
-        orderId,
-        recipeId,
-        false
-      );
+      // await this.storagePublisher.sendOrderStatusCompleted(
+      //   orderId,
+      // );
       console.log(
         "=========================== ENDING TRANSACTION ==========================="
       );
