@@ -73,11 +73,11 @@ export class OrderRepository implements IOrderRepository {
         o.id,
         o.recipe_name AS recipeName,
         o.recipe_id AS recipeId,
-        o.created_at AS createdAt,
+        DATE_FORMAT(o.created_at, '%Y-%m-%dT%H:%i:%sZ') AS createdAt,
         (	SELECT 
           JSON_ARRAYAGG(
             JSON_OBJECT('status',ohs.status,
-                    'createdAt',ohs.created_at)
+                    'createdAt',DATE_FORMAT(ohs.created_at, '%Y-%m-%dT%H:%i:%sZ'))
             ) 
         FROM 
           order_history_status ohs

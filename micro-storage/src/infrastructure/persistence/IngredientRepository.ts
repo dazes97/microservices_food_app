@@ -17,7 +17,7 @@ export class IngredientRepository implements IIngredientRepository {
 	      AND i.id IN (${filteredNames})
         WHERE
 	      s.deleted_at IS NULL
-        FOR UPDATE`;
+        LOCK IN SHARE MODE`;
     const [rows] = await dbConnection.query(query, []);
     return rows.length > 0
       ? rows.map((e: any) => IngredientMapper.toDomain(e))
