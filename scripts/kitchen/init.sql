@@ -28,7 +28,7 @@ ENGINE=InnoDB
 
 
 INSERT INTO `recipes` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (1, 'Bandeja Paisa', '2025-03-08 23:51:45', NULL, NULL);
-INSERT INTO `recipes` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (2, 'Ajiaco Santafereño', '2025-03-08 23:52:03', NULL, NULL);
+INSERT INTO `recipes` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (2, 'Ajiaco Santafereno', '2025-03-08 23:52:03', NULL, NULL);
 INSERT INTO `recipes` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (3, 'Arroz con Pollo Colombiano', '2025-03-08 23:52:14', NULL, NULL);
 INSERT INTO `recipes` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (4, 'Arepa Rellena de Carne y Queso', '2025-03-08 23:52:29', NULL, NULL);
 INSERT INTO `recipes` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (5, 'Papas Criollas con Queso y Ketchup', '2025-03-08 23:52:45', NULL, NULL);

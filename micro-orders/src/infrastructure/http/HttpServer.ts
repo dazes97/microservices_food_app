@@ -1,4 +1,5 @@
 import http, { IncomingMessage, ServerResponse } from "http";
+import { ProcessOrdersList } from "@/application/ProcessOrdersDetails.js";
 import { ProcessOrderDetail } from "@/application/processOrderDetail";
 import { HTTP_METHOD_LIST } from "@infrastructure/config/HttpMethodList.js";
 import { HTTP_ROUTE_LIST } from "@infrastructure/config/HttpRouteList.js";
@@ -7,7 +8,8 @@ import { ProcessOrder } from "@/application/ProcessOrder.js";
 export class HttpServer {
   constructor(
     private processOrder: ProcessOrder,
-    private processOrderDetail: ProcessOrderDetail
+    private processOrderDetail: ProcessOrderDetail,
+    private processOrdersList: ProcessOrdersList
   ) {}
 
   start(port: number) {
@@ -23,6 +25,11 @@ export class HttpServer {
           req.url?.match(/^\/orders\/\d+$/)
         ) {
           await this.handleOrderDetail(req, res);
+        } else if (
+          req.method === HTTP_METHOD_LIST.GET &&
+          req.url === HTTP_ROUTE_LIST.FIND_ALL
+        ) {
+          await this.handleOrdersList(req, res);
         } else {
           res.writeHead(404, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ message: "Not Found" }));
@@ -64,6 +71,22 @@ export class HttpServer {
           throw new Error("Invalid orderId");
         }
       }
+    } catch (error) {
+      console.error("Error processing request:", error);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({ message: "Internal Server Error", status: "error" })
+      );
+    }
+  }
+
+  private async handleOrdersList(req: IncomingMessage, res: ServerResponse) {
+    try {
+      const response = await this.processOrdersList.execute();
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({ status: "success", data: response, message: "" })
+      );
     } catch (error) {
       console.error("Error processing request:", error);
       res.writeHead(500, { "Content-Type": "application/json" });

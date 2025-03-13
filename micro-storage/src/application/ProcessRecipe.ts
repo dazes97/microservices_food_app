@@ -1,9 +1,11 @@
-import { StoragePublisher } from "@infrastructure/transporter/StoragePublisher.js";
 import { IIngredientRepository } from "@domain/repositories/IIngredientRepository.js";
+import { StoragePublisher } from "@infrastructure/transporter/StoragePublisher.js";
+import { IPlazaRepository } from "@/domain/repositories/IPlazaRepository.js";
 import { IDatabaseAdapter } from "@infrastructure/database/DatabaseAdapater.js";
 import { PlazaClient } from "@infrastructure/http/PlazaClient.js";
 
 interface IStockVerification {
+  id: number;
   name: string;
   inStock: number;
   required: number;
@@ -11,6 +13,7 @@ interface IStockVerification {
 export class ProcessRecipe {
   constructor(
     private ingredientRepository: IIngredientRepository,
+    private plazaRepository: IPlazaRepository,
     private plazaClient: PlazaClient,
     private storagePublisher: StoragePublisher,
     private databaseAdapter: IDatabaseAdapter
@@ -44,6 +47,7 @@ export class ProcessRecipe {
         );
         if (requiredIngredient) {
           stockVerification.push({
+            id: foundIngredient.id,
             name: foundIngredient.name,
             inStock: foundIngredient.quantity,
             required: requiredIngredient.quantity,
@@ -58,9 +62,7 @@ export class ProcessRecipe {
         let cart: number = 0;
         while (stockFlag) {
           if (cart + detail.inStock < detail.required) {
-            console.log(
-              "no stock trying to buy....."
-            );
+            console.log("no stock trying to buy.....");
             const { name, quantitySold } = await this.plazaClient.buyIngredient(
               detail.name
             );
@@ -69,6 +71,11 @@ export class ProcessRecipe {
               await this.ingredientRepository.increaseQuantity(
                 detail.name,
                 quantitySold
+              );
+              await this.plazaRepository.create(
+                orderId,
+                quantitySold,
+                detail.id
               );
               cart += quantitySold;
               console.log(
@@ -105,6 +112,7 @@ export class ProcessRecipe {
               throw new Error("No ingredients in db.");
             }
             stockVerification.push({
+              id: foundIngredient.id,
               name: foundIngredient.name,
               inStock: foundIngredient.quantity,
               required: requiredIngredient.quantity,
@@ -119,15 +127,13 @@ export class ProcessRecipe {
           detail.required
         );
         console.log(
-          `Stock updated: ${detail.name} -> ${
-            detail.inStock - detail.required
-          }`
+          `Stock updated: ${detail.name} -> ${detail.inStock - detail.required}`
         );
       }
       console.log("Stock reduced ok.");
-      setTimeout(async () => {
-        await this.storagePublisher.sendOrderStatusCompleted(orderId);
-      }, 5000);
+      //setTimeout(async () => {
+      await this.storagePublisher.sendOrderStatusCompleted(orderId);
+      //}, 5000);
       await db.query("COMMIT");
       console.log(
         "=========================== ENDING TRANSACTION ==========================="

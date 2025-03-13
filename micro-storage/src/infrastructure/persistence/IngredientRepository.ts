@@ -50,8 +50,7 @@ export class IngredientRepository implements IIngredientRepository {
 	      ON i.id = s.ingredient_id
 	      AND i.deleted_at IS NULL
         WHERE
-	      s.deleted_at IS NULL
-        FOR UPDATE`,
+	      s.deleted_at IS NULL`,
       []
     );
     return rows.length > 0

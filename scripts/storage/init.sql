@@ -25,6 +25,23 @@ COLLATE='utf8mb4_0900_ai_ci'
 ENGINE=InnoDB
 ;
 
+CREATE TABLE `plaza` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`order_id` INT NOT NULL,
+	`quantity` INT NOT NULL,
+	`ingredient_id` INT NOT NULL,
+	`created_at` DATETIME NOT NULL DEFAULT (now()),
+	`updated_at` DATETIME NULL DEFAULT NULL,
+	`deleted_at` DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `FK_plaza_ingredients` (`ingredient_id`) USING BTREE,
+	CONSTRAINT `FK_plaza_ingredients` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
+
+
 INSERT INTO `ingredients` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (1, 'lemon', '2025-03-12 13:00:07', NULL, NULL);
 INSERT INTO `ingredients` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (2, 'potato', '2025-03-12 13:00:12', NULL, NULL);
 INSERT INTO `ingredients` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES (3, 'rice', '2025-03-12 13:00:17', NULL, NULL);

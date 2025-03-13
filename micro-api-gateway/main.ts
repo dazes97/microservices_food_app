@@ -29,6 +29,20 @@ const services = {
 };
 
 const server = http.createServer((req, res) => {
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
   if (req.url?.startsWith(`/${ORDERS_MICROSERVICE_ROUTE}`)) {
     proxyRequest(req, res, services.orders);
   } else if (req.url?.startsWith(`/${KITCHEN_MICROSERVICE_ROUTE}`)) {
@@ -59,6 +73,16 @@ function proxyRequest(
   };
 
   const proxy = request(options, (proxyRes) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    );
+
     res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
     proxyRes.pipe(res, { end: true });
   });
