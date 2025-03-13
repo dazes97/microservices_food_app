@@ -39,9 +39,9 @@ interface IPlaza {
   quantity: number;
   createdAt: string;
 }
-const ordersUrl = "http://localhost/api/orders";
-const stockUrl = "http://localhost/api/storage/stock";
-const plazaUrl = "http://localhost/api/storage/plaza";
+const ordersUrl = "http://45.55.49.40/api/orders";
+const stockUrl = "http://45.55.49.40/api/storage/stock";
+const plazaUrl = "http://45.55.49.40/api/storage/plaza";
 export const Home = () => {
   const [loadingStock, setLoadingStock] = useState<boolean>(true);
   const [loadingOrders, setLoadingOrders] = useState<boolean>(true);

@@ -6,7 +6,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./front-react-alegra/dist:/usr/share/nginx/html:ro
+      - frontend-dist:/usr/share/nginx/html:ro
 
     depends_on:
       - frontend
@@ -18,7 +18,7 @@ services:
     build: ./front-react-alegra
     container_name: frontend
     volumes:
-      - ./front-react-alegra/build:/app/build
+      - frontend-dist:/frontend
     depends_on:
       - api-gateway
     networks:
@@ -148,8 +148,9 @@ services:
 networks:
   app-network:
     driver: bridge
-    
+
 volumes:
   mysql-orders-data:
   mysql-kitchen-data:
   mysql-storage-data:
+  frontend-dist:

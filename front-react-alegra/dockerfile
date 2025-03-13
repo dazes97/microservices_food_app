@@ -12,8 +12,9 @@ RUN npm run build
 
 FROM alpine:latest
 
-WORKDIR /dist
+WORKDIR /frontend
 
 COPY --from=builder /app/dist /frontend
+
 
 
