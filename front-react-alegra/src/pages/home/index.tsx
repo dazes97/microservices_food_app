@@ -11,7 +11,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Refresh } from "@mui/icons-material";
 import Grid from "@mui/material/Grid2";
 import axios from "axios";
-import { TableOrders, TablePlaza } from "./components";
+import { RecipeList, TableOrders, TablePlaza } from "./components";
 
 interface IStock {
   name: string;
@@ -92,6 +92,7 @@ export const Home = () => {
 
   return (
     <>
+      <RecipeList />
       <Box sx={{ display: "flex", justifyContent: "center", pt: 1, pb: 3 }}>
         <Typography sx={{ fontSize: { xs: 30, md: 50 } }}>
           Alegra Almuerzos
